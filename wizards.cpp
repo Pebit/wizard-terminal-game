@@ -75,6 +75,7 @@ public:
 	Jucator(int index, std::string nume) : nume(nume), mana(200), cristale(0) {}
 
 	std::string get_nume();
+	int get_cristale();
 	void procura() {
 		this->mana += 100;
 	}
@@ -157,6 +158,9 @@ public:
 			break;
 		}
 	}
+	void consolare() {
+		this->mana += 50;
+	}
 
 	friend std::istream& operator>>(std::istream& in, Jucator& jucator);
 	friend std::ostream& operator<<(std::ostream& os, const Jucator& jucator);
@@ -165,7 +169,9 @@ public:
 std::string Jucator::get_nume() {
 	return this->nume;
 }
-
+int Jucator::get_cristale() {
+	return this->cristale;
+}
 std::istream& operator>>(std::istream& is, Jucator& jucator) {
 	is >> jucator.nume;
 	return is;
@@ -264,7 +270,7 @@ int main()
 								std::cin >> jucator_ales;
 							}
 							arrJucatori[id_jucator].fura_cristale(arrJucatori[jucator_ales]);
-							std::cout << "cristale de la\n" << arrJucatori[jucator_ales] << " si s - au transformat in mana\n" << arrJucatori[id_jucator] << "\n";
+							std::cout << "cristale de la\n" << arrJucatori[jucator_ales] << " si s-au transformat in mana\n" << arrJucatori[id_jucator] << "\n";
 							break;
 						case 4:
 							arrJucatori[id_jucator].crist_or_proc();
@@ -282,6 +288,21 @@ int main()
 					}
 				}
 			}
+			else {
+				arrJucatori[id_jucator].consolare();
+				std::cout << "consolare +50\n" << arrJucatori[id_jucator];
+			}
 		}
+	}
+	int max = -1;
+	for (int id_jucator = 1; id_jucator <= nr_jucatori; id_jucator++) {
+		std::cout << id_jucator << " " << arrJucatori[id_jucator];
+		if (arrJucatori[id_jucator].get_cristale() > max)
+			max = arrJucatori[id_jucator].get_cristale();
+	}
+	// inca un for in caz de egalitate
+	for (int id_jucator = 1; id_jucator <= nr_jucatori; id_jucator++) {
+		if (arrJucatori[id_jucator].get_cristale() == max)
+			std::cout << "Castigator: " << arrJucatori[id_jucator];
 	}
 }
