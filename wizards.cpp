@@ -1,6 +1,15 @@
 #include <iostream>
-#include <string>
+#include <string.h>
 #include <ctime>
+
+enum OptiuniMeniu {
+	OPT_enchant,
+	OPT_procura,
+	OPT_fura_mana,
+	OPT_fura_cristale,
+	OPT_cristaliz_or_procura,
+	OPT_cristaliz
+};
 struct Zar {
 private:
 	int fata[6];
@@ -30,22 +39,22 @@ void Zar::aruncare() {
 		int r = rand() % 6;
 		std::cout << "a picat ";
 		switch (r) {
-		case 0:
+		case OPT_enchant:
 			std::cout << "<ENCHANT>\n";
 			break;
-		case 1:
+		case OPT_procura:
 			std::cout << "<PROCURA>\n";
 			break;
-		case 2:
+		case OPT_fura_mana:
 			std::cout << "<FURA MANA>\n";
 			break;
-		case 3:
+		case OPT_fura_cristale:
 			std::cout << "<FURA CRISTALE>\n";
 			break;
-		case 4:
+		case OPT_cristaliz_or_procura:
 			std::cout << "<CRISTALIZEAZA/PROCURA>\n";
 			break;
-		case 5:
+		case OPT_cristaliz:
 			std::cout << "<CRISTALIZEAZA>\n";
 			break;
 		default:
@@ -65,15 +74,16 @@ void Zar::verificare_bust(int r) {
 
 struct Jucator {
 private:
-	std::string nume;
+	char* nume;
 	int mana;
 	int cristale;
 public:
-	Jucator() : nume("Jucator_Default"), mana(200), cristale(0) {}
-	Jucator(int index) : nume("Jucator_Default"), mana(200), cristale(0) {}
-	Jucator(int index, std::string nume) : nume(nume), mana(200), cristale(0) {}
+	Jucator(const char* nume = "Jucator_Default") : mana(200), cristale(0) {
+		this->nume = new char[strlen(nume) + 1];
+		strcpy(this->nume, nume);
+	}
 
-	std::string get_nume();
+	char* get_nume();
 	int get_cristale();
 	void procura();
 	void cristalizeaza();
@@ -85,9 +95,13 @@ public:
 
 	friend std::istream& operator>>(std::istream& in, Jucator& jucator);
 	friend std::ostream& operator<<(std::ostream& os, const Jucator& jucator);
+
+	~Jucator() {
+		delete[] nume;
+	}
 };
 
-std::string Jucator::get_nume() {
+char* Jucator::get_nume() {
 	return this->nume;
 }
 int Jucator::get_cristale() {
@@ -156,19 +170,19 @@ void Jucator::enchant(Zar& zar) {
 	while (decider < 1 or decider > 5)
 		std::cin >> decider;
 	switch (decider) {
-	case 1:
+	case OPT_procura:
 		zar.inc_fata(1);
 		break;
-	case 2:
+	case OPT_fura_mana:
 		zar.inc_fata(2);
 		break;
-	case 3:
+	case OPT_fura_cristale:
 		zar.inc_fata(3);
 		break;
-	case 4:
+	case OPT_cristaliz_or_procura:
 		zar.inc_fata(4);
 		break;
-	case 5:
+	case OPT_cristaliz:
 		zar.inc_fata(5);
 		break;
 	default:
@@ -253,19 +267,19 @@ int main()
 					for (int fata = 1; fata < 6; fata++)
 						if (zarul_mistic.get_fata(fata)) {
 							switch (fata) {
-							case 1:
+							case OPT_procura:
 								std::cout << "1 <PROCURA>\n";
 								break;
-							case 2:
+							case OPT_fura_mana:
 								std::cout << "2 <FURA MANA>\n";
 								break;
-							case 3:
+							case OPT_fura_cristale:
 								std::cout << "3 <FURA CRISTALE>\n";
 								break;
-							case 4:
+							case OPT_cristaliz_or_procura:
 								std::cout << "4 <CRISTALIZEAZA/PROCURA>\n";
 								break;
-							case 5:
+							case OPT_cristaliz:
 								std::cout << "5 <CRISTALIZEAZA>\n";
 								break;
 							default:
@@ -280,11 +294,11 @@ int main()
 					while (zarul_mistic.get_fata(fata)) {
 						int jucator_ales = -1;
 						switch (fata) {
-						case 1:
+						case OPT_procura:
 							arrJucatori[id_jucator].procura();
 							std::cout << "ai PROCURAT 100 mana\n";
 							break;
-						case 2:
+						case OPT_fura_mana:
 							while ((jucator_ales < 1 or jucator_ales > nr_jucatori) and jucator_ales != id_jucator) {
 								std::cout << "alege un jucator de la care sa furi (" << 1 << "->" << nr_jucatori << ")\n";
 								std::cin >> jucator_ales;
@@ -292,7 +306,7 @@ int main()
 							arrJucatori[id_jucator].fura_mana(arrJucatori[jucator_ales]);
 							std::cout << "mana de la\n" << arrJucatori[jucator_ales] << "\n";
 							break;
-						case 3:
+						case OPT_fura_cristale:
 							while ((jucator_ales < 1 or jucator_ales > nr_jucatori) and jucator_ales != id_jucator) {
 								std::cout << "alege un jucator de la care sa furi (" << 1 << "->" << nr_jucatori << ")\n";
 								std::cin >> jucator_ales;
@@ -300,11 +314,11 @@ int main()
 							arrJucatori[id_jucator].fura_cristale(arrJucatori[jucator_ales]);
 							std::cout << "cristale de la\n" << arrJucatori[jucator_ales] << " si s-au transformat in mana\n" << arrJucatori[id_jucator] << "\n";
 							break;
-						case 4:
+						case OPT_cristaliz_or_procura:
 							arrJucatori[id_jucator].crist_or_proc();
 							std::cout << arrJucatori[id_jucator] << "\n";
 							break;
-						case 5:
+						case OPT_cristaliz:
 							arrJucatori[id_jucator].cristalizeaza();
 							std::cout << "din mana\n" << arrJucatori[id_jucator] << "\n";
 							break;
